@@ -45,7 +45,7 @@ func (c Cage) Describe() {
 	}
 }
 
-func ReproduceAnimals(species string, name string) *Animal {
+func (a Animal) Reproduce(species string, name string) *Animal {
 	return NewAnimal(species, name)
 }
 
@@ -75,13 +75,14 @@ func (zk Zookeeper) AddAnimalToCage(c *AllCages, z *Zoo) error {
 	return nil
 }
 func main() {
-
 	lion := NewAnimal("lion", "Simba")
+	nala := NewAnimal("lion", "Nala")
 	warthog := NewAnimal("warthog", "Pumba")
 	meerkat := NewAnimal("meerkat", "Timon")
 	zoopark := Zoo{
 		Animals: []Animal{
 			*lion,
+			*nala,
 			*warthog,
 			*meerkat,
 		},
@@ -89,11 +90,13 @@ func main() {
 	cage1 := NewCage("cage1")
 	cage2 := NewCage("cage2")
 	cage3 := NewCage("cage3")
+	cage4 := NewCage("cage4")
 	cages := AllCages{
 		Cages: []Cage{
 			*cage1,
 			*cage2,
 			*cage3,
+			*cage4,
 		},
 	}
 	zk := NewZookeeper()
@@ -102,8 +105,8 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	newLion := ReproduceAnimals("lion", "Kiara")
-	zoopark.Animals = append(zoopark.Animals, *newLion)
+	kion := nala.Reproduce("lion", "Kiara")
+	zoopark.Animals = append(zoopark.Animals, *kion)
 	err = zk.AddAnimalToCage(&cages, &zoopark)
 	if err != nil {
 		fmt.Println(err)
