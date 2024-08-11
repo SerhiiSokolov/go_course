@@ -5,11 +5,11 @@ import "fmt"
 type Animal struct {
 	name    string
 	species string
-	isCaged bool
+	cage    *Cage
 }
 
 type Zoo struct {
-	Animals []Animal
+	Animals []*Animal
 }
 
 type Cage struct {
@@ -28,7 +28,11 @@ type Zookeeper struct {
 func NewAnimal(species string, name string) *Animal {
 	return &Animal{species: species, name: name}
 }
-
+func (a *Animal) Escape() {
+	fmt.Printf("Animal %s escaped from the cage %v\n", a.name, a.cage.name)
+	a.cage.animal = nil
+	a.cage = nil
+}
 func NewCage(name string) *Cage {
 	return &Cage{name: name}
 }
@@ -54,49 +58,50 @@ func (a Animal) Reproduce(species string, name string) *Animal {
 // Повертає помилку, якщо всі клітки зайняті і тварина не поміщена в клітку.
 func (zk Zookeeper) AddAnimalToCage(c *AllCages, z *Zoo) error {
 
-	for i := range z.Animals {
-		animal := &z.Animals[i]
-		if !animal.isCaged {
-
+	for _, animal := range z.Animals {
+		if animal.cage == nil {
 			for j := range c.Cages {
 				cage := &c.Cages[j]
 				if cage.animal == nil {
 					cage.animal = animal
-					animal.isCaged = true
+					animal.cage = cage
 					fmt.Printf("Added %s to the cage %s\n", animal.name, cage.name)
 					break
 				}
 			}
-			if !animal.isCaged {
+			if animal.cage == nil {
 				return fmt.Errorf("All cages are occupied, %s is homeless", animal.name)
 			}
 		}
 	}
 	return nil
 }
+
 func main() {
-	lion := NewAnimal("lion", "Simba")
+	simba := NewAnimal("lion", "Simba")
 	nala := NewAnimal("lion", "Nala")
-	warthog := NewAnimal("warthog", "Pumba")
-	meerkat := NewAnimal("meerkat", "Timon")
+	pumba := NewAnimal("warthog", "Pumba")
+	timon := NewAnimal("meerkat", "Timon")
 	zoopark := Zoo{
-		Animals: []Animal{
-			*lion,
-			*nala,
-			*warthog,
-			*meerkat,
+		Animals: []*Animal{
+			simba,
+			nala,
+			pumba,
+			timon,
 		},
 	}
 	cage1 := NewCage("cage1")
 	cage2 := NewCage("cage2")
 	cage3 := NewCage("cage3")
 	cage4 := NewCage("cage4")
+	cage5 := NewCage("cage5")
 	cages := AllCages{
 		Cages: []Cage{
 			*cage1,
 			*cage2,
 			*cage3,
 			*cage4,
+			*cage5,
 		},
 	}
 	zk := NewZookeeper()
@@ -105,12 +110,17 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	kion := nala.Reproduce("lion", "Kiara")
-	zoopark.Animals = append(zoopark.Animals, *kion)
+	kiara := nala.Reproduce("lion", "Kiara")
+	zoopark.Animals = append(zoopark.Animals, kiara)
 	err = zk.AddAnimalToCage(&cages, &zoopark)
 	if err != nil {
 		fmt.Println(err)
 	}
+	for _, c := range cages.Cages {
+		c.Describe()
+	}
+	nala.Escape()
+	timon.Escape()
 	for _, c := range cages.Cages {
 		c.Describe()
 	}
