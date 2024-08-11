@@ -14,7 +14,7 @@ type Zoo struct {
 
 type Cage struct {
 	name   string
-	animal string
+	animal *Animal
 }
 
 type AllCages struct {
@@ -38,10 +38,10 @@ func NewZookeeper() *Zookeeper {
 }
 
 func (c Cage) Describe() {
-	if c.animal == "" {
+	if c.animal == nil {
 		fmt.Println("Cage is empty!")
 	} else {
-		fmt.Printf("Cage %s is occupied by animal: %s\n", c.name, c.animal)
+		fmt.Printf("Cage %s is occupied by animal: %s\n", c.name, c.animal.name)
 	}
 }
 
@@ -60,8 +60,8 @@ func (zk Zookeeper) AddAnimalToCage(c *AllCages, z *Zoo) error {
 
 			for j := range c.Cages {
 				cage := &c.Cages[j]
-				if cage.animal == "" {
-					cage.animal = animal.species
+				if cage.animal == nil {
+					cage.animal = animal
 					animal.isCaged = true
 					fmt.Printf("Added %s to the cage %s\n", animal.name, cage.name)
 					break
