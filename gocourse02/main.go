@@ -85,8 +85,7 @@ func (zk Zookeeper) AddAnimalToCage(z *Zoo) error {
 }
 
 func main() {
-	simba := NewAnimal("asdkjhasd", "Simba")
-	fmt.Println(simba.species)
+	simba := NewAnimal(Lion, "Simba")
 	nala := NewAnimal(Lion, "Nala")
 	pumba := NewAnimal(Warthog, "Pumba")
 	timon := NewAnimal(Meerkat, "Timon")
