@@ -56,8 +56,8 @@ func (c Cage) Describe() {
 	}
 }
 
-func (a Animal) Reproduce(species AnimalSpecies, name string) *Animal {
-	return NewAnimal(species, name)
+func (a Animal) Reproduce(name string) *Animal {
+	return NewAnimal(a.species, name)
 }
 
 // AddAnimalToCage puts all animals to cages.
@@ -116,7 +116,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	kiara := nala.Reproduce("lion", "Kiara")
+	kiara := nala.Reproduce("Kiara")
 	zoopark.Animals = append(zoopark.Animals, kiara)
 	err = zk.AddAnimalToCage(&zoopark)
 	if err != nil {
