@@ -41,8 +41,7 @@ func NewRodent(id int, t rodentType) *Rodent {
 	return &Rodent{id, t, nil}
 }
 
-func (r *Rodent) MoveRodent(source *Sector, dest *Sector) {
-	time.Sleep(100 * time.Millisecond)
+func (r *Rodent) Move(source *Sector, dest *Sector) {
 	now := time.Now()
 	move := Movement{FromTo: FromTo{source, dest}, Time: now}
 	r.Movements = append(r.Movements, &move)
@@ -51,18 +50,19 @@ func (r *Rodent) MoveRodent(source *Sector, dest *Sector) {
 }
 
 func (r *Rodent) Describe() {
-	if len(r.Movements) > 0 {
-		from := r.Movements[0].FromTo[0]
-		to := r.Movements[len(r.Movements)-1].FromTo[1]
-		fmt.Printf("Started at %s\n", from.Name)
-		fmt.Printf("Finished at %s\n", to.Name)
-		for _, movement := range r.Movements {
-			from := movement.FromTo[0]
-			to := movement.FromTo[1]
-			fmt.Printf("Moved from %s to %s at %v\n", from.Name, to.Name, movement.Time)
-		}
+	fmt.Printf("ID=%d, Type=%s\n", r.ID, r.Type)
+	if len(r.Movements) == 0 {
+		return
 	}
-
+	from := r.Movements[0].FromTo[0]
+	to := r.Movements[len(r.Movements)-1].FromTo[1]
+	fmt.Printf("Started at %s\n", from.Name)
+	fmt.Printf("Finished at %s\n", to.Name)
+	for _, movement := range r.Movements {
+		from := movement.FromTo[0]
+		to := movement.FromTo[1]
+		fmt.Printf("Moved from %s to %s at %v\n", from.Name, to.Name, movement.Time)
+	}
 }
 
 func NewSector(name string) *Sector {
@@ -74,25 +74,27 @@ func (s *Sector) AddRodent(r *Rodent) {
 }
 
 func (s *Sector) RemoveRodent(r *Rodent) {
-	temp := NewSector(s.Name)
-	for _, rd := range s.Rodents {
-		if rd.ID != r.ID {
-			temp.AddRodent(rd)
+	for i, rd := range s.Rodents {
+		if rd.ID == r.ID {
+			s.Rodents = append(s.Rodents[:i], s.Rodents[i+1:]...)
+			break
 		}
 	}
-	s.Rodents = temp.Rodents
 }
 
 func (s Sector) Describe() {
 	fmt.Println(s.Name)
 	for _, rodent := range s.Rodents {
-		fmt.Printf("ID=%d, Type=%s\n", rodent.ID, rodent.Type)
 		rodent.Describe()
 	}
 }
 
 func NewMaze() *Maze {
 	return &Maze{}
+}
+
+func (m *Maze) AddSectors(s *Sector) {
+	m.Sectors = append(m.Sectors, s)
 }
 
 func (m Maze) Describe() {
@@ -105,29 +107,30 @@ func main() {
 	sector1 := NewSector("Sector1")
 	sector2 := NewSector("Sector2")
 	maze := NewMaze()
-	maze.Sectors = append(maze.Sectors, sector1, sector2)
+	maze.AddSectors(sector1)
+	maze.AddSectors(sector2)
 
-	Beaver1 := NewRodent(1, Beaver)
-	Beaver2 := NewRodent(2, Beaver)
-	Hamster1 := NewRodent(3, Hamster)
-	Hamster2 := NewRodent(4, Hamster)
-	Squirrel1 := NewRodent(5, Squirrel)
-	Squirrel2 := NewRodent(6, Squirrel)
+	beaver1 := NewRodent(1, Beaver)
+	beaver2 := NewRodent(2, Beaver)
+	hamster1 := NewRodent(3, Hamster)
+	hamster2 := NewRodent(4, Hamster)
+	squirrel1 := NewRodent(5, Squirrel)
+	squirrel2 := NewRodent(6, Squirrel)
 
-	sector1.AddRodent(Beaver1)
-	sector1.AddRodent(Hamster1)
-	sector1.AddRodent(Squirrel1)
-	sector2.AddRodent(Hamster2)
-	sector2.AddRodent(Beaver2)
-	sector2.AddRodent(Squirrel2)
+	sector1.AddRodent(beaver1)
+	sector1.AddRodent(hamster1)
+	sector1.AddRodent(squirrel1)
+	sector2.AddRodent(hamster2)
+	sector2.AddRodent(beaver2)
+	sector2.AddRodent(squirrel2)
 
-	Beaver1.MoveRodent(sector1, sector2)
-	Beaver2.MoveRodent(sector2, sector1)
-	Beaver2.MoveRodent(sector1, sector2)
-	Hamster1.MoveRodent(sector1, sector2)
-	Hamster2.MoveRodent(sector2, sector1)
-	Squirrel1.MoveRodent(sector1, sector2)
-	Squirrel2.MoveRodent(sector2, sector1)
+	beaver1.Move(sector1, sector2)
+	beaver2.Move(sector2, sector1)
+	beaver2.Move(sector1, sector2)
+	hamster1.Move(sector1, sector2)
+	hamster2.Move(sector2, sector1)
+	squirrel1.Move(sector1, sector2)
+	squirrel2.Move(sector2, sector1)
 	fmt.Println("After moving")
 	maze.Describe()
 }
