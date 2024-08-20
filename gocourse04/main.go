@@ -9,9 +9,9 @@ const (
 	Birds     Types = "Birds"
 	Primates  Types = "Primates"
 
-	GroomingBrush    Purpose = "Grooming Brush"
-	WaterBucket      Purpose = "Water Bucket"
-	VeterinarySyring Purpose = "Veterinary Syring"
+	Brush  Purpose = "Grooming Brush"
+	Bucket Purpose = "Water Bucket"
+	Syring Purpose = "Veterinary Syring"
 )
 
 type Zoo struct {
@@ -19,12 +19,11 @@ type Zoo struct {
 }
 
 func (z Zoo) FindAnimalByName(name string) *Animal {
-	fmt.Println("###########################")
 	for _, area := range z.Areas {
 		for sectorName, sector := range area.Sectors {
 			for _, animal := range sector.Animals {
 				if animal.Name == name {
-					fmt.Printf("Animal %s with ID %d is located in area %s, sector %s, address %v\n", animal.Name, animal.ID, area.Name, sectorName, &animal)
+					fmt.Printf("Animal %s with ID %d is located in area %s, sector %s\n", animal.Name, animal.ID, area.Name, sectorName)
 					return animal
 				}
 			}
@@ -86,12 +85,13 @@ func (a *Area) NewSector(subtype string, u UtilityRoom) *Sector {
 }
 
 type UtilityRoom struct {
+	//The key is a tool's name
 	Tools map[string]Tool
 }
 
 func (u UtilityRoom) Describe() {
-	for tool := range u.Tools {
-		fmt.Printf("Tool is %s\n", tool)
+	for k, v := range u.Tools {
+		fmt.Printf("Tool is %s and purpose is %s\n", k, v.Purpose)
 	}
 }
 
@@ -131,13 +131,13 @@ func main() {
 	zoo.AddArea("Ungulates", ungulatesArea)
 	zoo.AddArea("Birds", birdsArea)
 	zoo.AddArea("Primates", primatesArea)
-	brush := NewTool(GroomingBrush)
-	bucket := NewTool(WaterBucket)
-	syring := NewTool(VeterinarySyring)
+	brush := NewTool(Brush)
+	bucket := NewTool(Bucket)
+	syring := NewTool(Syring)
 	allTools := map[string]Tool{
-		"GroomingBrush":    *brush,
-		"WaterBucket":      *bucket,
-		"VeterinarySyring": *syring,
+		"Brush":  *brush,
+		"Bucket": *bucket,
+		"Syring": *syring,
 	}
 	ungulatesUtilityRoom := NewUtilityRoom(allTools)
 	birdsUtilityRoom := NewUtilityRoom(allTools)
@@ -145,9 +145,9 @@ func main() {
 	deerSector := ungulatesArea.NewSector("deer", *ungulatesUtilityRoom)
 	birdsSector := birdsArea.NewSector("eagle", *birdsUtilityRoom)
 	gorillasSector := primatesArea.NewSector("gorilla", *primatesUtilityRoom)
-	deer := NewAnimal(1, "Deer", "deer")
-	eagle := NewAnimal(2, "Eagle", "eagle")
-	gorilla := NewAnimal(3, "Gorilla", "gorilla")
+	deer := NewAnimal(1, "Bambi", "deer")
+	eagle := NewAnimal(2, "Zazu", "eagle")
+	gorilla := NewAnimal(3, "Kong", "gorilla")
 	deerSector.AddAnimal(deer)
 	birdsSector.AddAnimal(eagle)
 	gorillasSector.AddAnimal(gorilla)
@@ -157,6 +157,9 @@ func main() {
 	deerSector.FeedAnimal(*deer)
 	birdsSector.FeedAnimal(*eagle)
 	gorillasSector.FeedAnimal(*gorilla)
-	zoo.FindAnimalByName("Gorilla")
-	fmt.Printf("%v", &gorilla)
+	animal := zoo.FindAnimalByName("Kong")
+	if animal != nil {
+		fmt.Printf("Let's describe found animal by name: %s\n", animal.Name)
+		animal.Describe()
+	}
 }
