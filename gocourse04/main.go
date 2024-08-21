@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	Ungulates Types = "Ungulates"
-	Birds     Types = "Birds"
-	Primates  Types = "Primates"
+	Ungulates AnimalType = "Ungulates"
+	Birds     AnimalType = "Birds"
+	Primates  AnimalType = "Primates"
 
 	Brush  Purpose = "Grooming Brush"
 	Bucket Purpose = "Water Bucket"
@@ -20,10 +20,9 @@ type Zoo struct {
 
 func (z Zoo) FindAnimalByName(name string) *Animal {
 	for _, area := range z.areas {
-		for sectorName, sector := range area.sectors {
+		for _, sector := range area.sectors {
 			for _, animal := range sector.animals {
 				if animal.name == name {
-					fmt.Printf("Animal %s with id %d is located in area %s, sector %s\n", animal.name, animal.id, area.name, sectorName)
 					return animal
 				}
 			}
@@ -41,15 +40,15 @@ func (z Zoo) AddArea(t string, area *Area) {
 	z.areas[t] = *area
 }
 
-type Types string
+type AnimalType string
 
 type Area struct {
 	name       string
-	anymalType Types
+	animalType AnimalType
 	sectors    map[string]*Sector
 }
 
-func NewArea(n string, t Types) *Area {
+func NewArea(n string, t AnimalType) *Area {
 	return &Area{n, t, make(map[string]*Sector)}
 }
 
@@ -85,7 +84,7 @@ func (a *Area) NewSector(subtype string, u UtilityRoom) *Sector {
 }
 
 type UtilityRoom struct {
-	//The key is a tool's name
+	// The key is a tool's name
 	tools map[string]Tool
 }
 
@@ -95,8 +94,8 @@ func (u UtilityRoom) Describe() {
 	}
 }
 
-func NewUtilityRoom(t map[string]Tool) *UtilityRoom {
-	return &UtilityRoom{t}
+func NewUtilityRoom(tools map[string]Tool) *UtilityRoom {
+	return &UtilityRoom{tools}
 }
 
 type Purpose string
@@ -120,7 +119,7 @@ func (a Animal) Describe() {
 }
 
 func NewAnimal(id int, name string, subtype string) *Animal {
-	return &Animal{id, name, subtype}
+	return &Animal{id: id, name: name, subtype: subtype}
 }
 
 func main() {

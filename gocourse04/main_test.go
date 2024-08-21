@@ -26,8 +26,8 @@ func TestAddArea(t *testing.T) {
 
 func TestNewArea(t *testing.T) {
 	area := NewArea("A1", Ungulates)
-	if area.name != "A1" || area.anymalType != Ungulates {
-		t.Errorf("Expected area name to be A1 and type to be Ungulates, got %s and %s", area.name, area.anymalType)
+	if area.name != "A1" || area.animalType != Ungulates {
+		t.Errorf("Expected area name to be A1 and type to be Ungulates, got %s and %s", area.name, area.animalType)
 	}
 }
 
