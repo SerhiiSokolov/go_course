@@ -15,15 +15,15 @@ const (
 )
 
 type Zoo struct {
-	Areas
+	areas
 }
 
 func (z Zoo) FindAnimalByName(name string) *Animal {
-	for _, area := range z.Areas {
-		for sectorName, sector := range area.Sectors {
-			for _, animal := range sector.Animals {
-				if animal.Name == name {
-					fmt.Printf("Animal %s with ID %d is located in area %s, sector %s\n", animal.Name, animal.ID, area.Name, sectorName)
+	for _, area := range z.areas {
+		for sectorName, sector := range area.sectors {
+			for _, animal := range sector.animals {
+				if animal.name == name {
+					fmt.Printf("Animal %s with id %d is located in area %s, sector %s\n", animal.name, animal.id, area.name, sectorName)
 					return animal
 				}
 			}
@@ -38,60 +38,60 @@ func NewZoo() *Zoo {
 }
 
 func (z Zoo) AddArea(t string, area *Area) {
-	z.Areas[t] = *area
+	z.areas[t] = *area
 }
 
 type Types string
 
 type Area struct {
-	Name    string
-	Type    Types
-	Sectors map[string]*Sector
+	name       string
+	anymalType Types
+	sectors    map[string]*Sector
 }
 
 func NewArea(n string, t Types) *Area {
 	return &Area{n, t, make(map[string]*Sector)}
 }
 
-type Areas map[string]Area
+type areas map[string]Area
 
 type Sector struct {
-	Subtype     string
-	Animals     []*Animal
-	UtilityRoom UtilityRoom
+	subtype     string
+	animals     []*Animal
+	utilityRoom UtilityRoom
 }
 
 func (s *Sector) AddAnimal(animal *Animal) {
-	s.Animals = append(s.Animals, animal)
+	s.animals = append(s.animals, animal)
 }
 
 func (s Sector) Describe() {
-	fmt.Printf("Sector subtype is %s.\n", s.Subtype)
-	for _, animal := range s.Animals {
+	fmt.Printf("Sector subtype is %s.\n", s.subtype)
+	for _, animal := range s.animals {
 		animal.Describe()
 	}
-	s.UtilityRoom.Describe()
+	s.utilityRoom.Describe()
 }
 
 func (s Sector) FeedAnimal(a Animal) {
-	fmt.Printf("%s sector is feeding the %s animal ....\n", s.Subtype, a.Name)
-	fmt.Printf("Animal %s is not hungry anymore\n", a.Name)
+	fmt.Printf("%s sector is feeding the %s animal ....\n", s.subtype, a.name)
+	fmt.Printf("Animal %s is not hungry anymore\n", a.name)
 }
 
 func (a *Area) NewSector(subtype string, u UtilityRoom) *Sector {
-	sector := Sector{Subtype: subtype, UtilityRoom: u}
-	a.Sectors[subtype] = &sector
+	sector := Sector{subtype: subtype, utilityRoom: u}
+	a.sectors[subtype] = &sector
 	return &sector
 }
 
 type UtilityRoom struct {
 	//The key is a tool's name
-	Tools map[string]Tool
+	tools map[string]Tool
 }
 
 func (u UtilityRoom) Describe() {
-	for k, v := range u.Tools {
-		fmt.Printf("Tool is %s and purpose is %s\n", k, v.Purpose)
+	for k, v := range u.tools {
+		fmt.Printf("Tool is %s and purpose is %s\n", k, v.purpose)
 	}
 }
 
@@ -102,7 +102,7 @@ func NewUtilityRoom(t map[string]Tool) *UtilityRoom {
 type Purpose string
 
 type Tool struct {
-	Purpose Purpose
+	purpose Purpose
 }
 
 func NewTool(p Purpose) *Tool {
@@ -110,13 +110,13 @@ func NewTool(p Purpose) *Tool {
 }
 
 type Animal struct {
-	ID      int
-	Name    string
-	Subtype string
+	id      int
+	name    string
+	subtype string
 }
 
 func (a Animal) Describe() {
-	fmt.Printf("Animal ID: %d, Name: %s, Subtype: %s\n", a.ID, a.Name, a.Subtype)
+	fmt.Printf("Animal id: %d, name: %s, subtype: %s\n", a.id, a.name, a.subtype)
 }
 
 func NewAnimal(id int, name string, subtype string) *Animal {
@@ -159,7 +159,7 @@ func main() {
 	gorillasSector.FeedAnimal(*gorilla)
 	animal := zoo.FindAnimalByName("Kong")
 	if animal != nil {
-		fmt.Printf("Let's describe found animal by name: %s\n", animal.Name)
+		fmt.Printf("Let's describe found animal by name: %s\n", animal.name)
 		animal.Describe()
 	}
 }
